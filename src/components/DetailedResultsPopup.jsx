@@ -1,27 +1,43 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Box, Paper } from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent } from "@mui/material";
 
 const DetailedResultsPopup = ({ questions, userAnswers, onClose }) => {
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>
-        📝 Résultats détaillés
+    <Dialog open={true} onClose={onClose} fullWidth maxWidth="md">
+      <DialogTitle align="center" sx={{ fontSize: "1.5rem", fontWeight: "bold", backgroundColor: "#E3F2FD" }}>
+        📖 Détails des Réponses
       </DialogTitle>
       <DialogContent>
         {questions.map((question, index) => {
           const isCorrect = userAnswers[index] === question.correct_answer;
           return (
-            <Paper key={index} sx={{ p: 2, my: 2, backgroundColor: "#f5f5f5" }}>
-              <Typography sx={{ fontWeight: "bold" }}>{question.question}</Typography>
-              <Typography color={isCorrect ? "green" : "red"}>
-                Ta réponse : {userAnswers[index] || "Aucune réponse"}
+            <Box
+              key={index}
+              sx={{
+                p: 2,
+                mb: 2,
+                borderRadius: "10px",
+                backgroundColor: isCorrect ? "#C8E6C9" : "#FFCDD2", // ✅ Vert si correct, rouge si faux
+                boxShadow: 2,
+              }}
+            >
+              <Typography fontWeight="bold" dangerouslySetInnerHTML={{ __html: question.question }} />
+              <Typography>
+                <strong>Ta réponse :</strong> <span style={{ color: isCorrect ? "green" : "red" }}>{userAnswers[index]}</span>
               </Typography>
-              <Typography sx={{ fontWeight: "bold", color: "green" }}>
-                ✅ Bonne réponse : {question.correct_answer}
-              </Typography>
-            </Paper>
+              {!isCorrect && (
+                <Typography>
+                  <strong>Bonne réponse :</strong> <span style={{ color: "green" }}>{question.correct_answer}</span>
+                </Typography>
+              )}
+            </Box>
           );
         })}
+
+        {/* 🔙 Fermer */}
+        <Button variant="contained" color="error" onClick={onClose} sx={{ mt: 2 }}>
+          Fermer ❌
+        </Button>
       </DialogContent>
     </Dialog>
   );
