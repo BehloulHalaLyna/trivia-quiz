@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography, Button, Dialog, DialogTitle, DialogContent } from "@mui/material";
+import he from "he"; // ✅ Import pour décoder
 
 const DetailedResultsPopup = ({ questions, userAnswers, onClose }) => {
   return (
@@ -23,7 +24,7 @@ const DetailedResultsPopup = ({ questions, userAnswers, onClose }) => {
             >
               <Typography fontWeight="bold" dangerouslySetInnerHTML={{ __html: question.question }} />
               <Typography>
-                <strong>Ta réponse :</strong> <span style={{ color: isCorrect ? "green" : "red" }}>{userAnswers[index]}</span>
+                <strong>Ta réponse :</strong> {he.decode(userAnswers[index])}
               </Typography>
               {!isCorrect && (
                 <Typography>

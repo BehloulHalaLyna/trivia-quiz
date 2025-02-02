@@ -12,13 +12,13 @@ const Quiz = ({ name, category, onFinish }) => {
   const [showResultsPopup, setShowResultsPopup] = useState(false);
   const [showDetailedResults, setShowDetailedResults] = useState(false);
   const { data: questions, isLoading, error } = useFetchQuestions(category);
-
+  const [quizFinished, setQuizFinished] = useState(false);
   // ⏳ Timer Global - 2 minutes
   const [timeLeft, setTimeLeft] = useState(120);
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      setShowResultsPopup(true);
+      handleFinishQuiz(); // ✅ On enregistre le score et le temps à la fin du temps
       return;
     }
     const timer = setInterval(() => {
@@ -45,7 +45,7 @@ const Quiz = ({ name, category, onFinish }) => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setShowResultsPopup(true);
+      handleFinishQuiz(); // ✅ On enregistre le score et le temps à la fin du quiz
     }
   };
 
@@ -55,6 +55,27 @@ const Quiz = ({ name, category, onFinish }) => {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
       setUserAnswers(userAnswers.slice(0, -1)); // Retirer la dernière réponse donnée
     }
+  };
+
+  // ✅ Fonction pour enregistrer le score et le temps dans le classement
+  const handleFinishQuiz = () => {
+    if (quizFinished) return; // ✅ Empêcher l'enregistrement si déjà terminé
+  
+    setQuizFinished(true); // ✅ Marquer le quiz comme terminé
+    const totalTimeUsed = 120 - timeLeft; // 🕒 Temps utilisé
+  
+    const newScore = {
+      name: name || "Joueur inconnu",
+      points: score,
+      themeId: category, // On garde l'ID du thème
+      timeUsed: totalTimeUsed, // ⏳ Enregistrer le temps utilisé
+    };
+  
+    const updatedScores = [...(JSON.parse(localStorage.getItem("scores")) || []), newScore];
+    localStorage.setItem("scores", JSON.stringify(updatedScores));
+  
+    setShowResultsPopup(true);
+    setTimeLeft(0); // ✅ Figer le temps après la fin du quiz !
   };
 
   const handleRestart = () => {
@@ -108,7 +129,7 @@ const Quiz = ({ name, category, onFinish }) => {
                 boxShadow: 2,
               }}
             >
-              {he.decode(answer)} {/* ✅ Décodage pour éviter les &quot; */}
+              {he.decode(answer)}
             </Paper>
           </Grid>
         ))}
@@ -124,7 +145,7 @@ const Quiz = ({ name, category, onFinish }) => {
         color="warning" 
         onClick={handlePreviousQuestion} 
         sx={{ mt: 3, mr: 2 }} 
-        disabled={currentQuestionIndex === 0} // Désactiver si c'est la première question
+        disabled={currentQuestionIndex === 0}
       >
         ⬅️ Question précédente
       </Button>
@@ -132,12 +153,14 @@ const Quiz = ({ name, category, onFinish }) => {
       {/* Popups des résultats */}
       {showResultsPopup && (
         <ResultsPopup
-          score={score}
-          totalQuestions={questions.length}
-          onRestart={handleRestart}
-          onFinish={onFinish}
-          onViewDetails={() => setShowDetailedResults(true)}
-          onClose={() => setShowResultsPopup(false)} // ✅ Correction ici !
+        score={score}
+        totalQuestions={questions.length}
+        userAnswers={userAnswers}  // ✅ Fix de l'erreur userAnswer
+        timeUsed={120 - timeLeft}  // ✅ Ajout du temps utilisé
+        onRestart={handleRestart}
+        onFinish={onFinish}
+        onViewDetails={() => setShowDetailedResults(true)}
+        onClose={() => setShowResultsPopup(false)}
         />
       )}
 

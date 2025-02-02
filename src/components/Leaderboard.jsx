@@ -1,31 +1,70 @@
-import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Button, Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Paper } from "@mui/material";
 
-const Leaderboard = ({ scores, onClose }) => {
-  // 🔥 Tri des scores du plus haut au plus bas
-  const sortedScores = [...scores].sort((a, b) => b.score - a.score);
+// ✅ Mapping des ID en noms de thèmes
+const categoriesMap = {
+  9: "Culture Générale",
+  10: "Livres",
+  11: "Films",
+  12: "Musique",
+  13: "Théâtre",
+  14: "Télévision",
+  15: "Jeux Vidéo",
+  16: "Jeux de Société",
+  17: "Science & Nature",
+  18: "Informatique",
+  19: "Mathématiques",
+  20: "Mythologie",
+  21: "Sports",
+  22: "Géographie",
+  23: "Histoire",
+  24: "Politique",
+  25: "Art",
+  26: "Célébrités",
+  27: "Animaux",
+  28: "Véhicules",
+  29: "Comics",
+  30: "Gadgets",
+  31: "Anime & Manga",
+  32: "Dessin Animé",
+};
+
+const Leaderboard = ({ onClose }) => {
+  const [scores, setScores] = useState([]);
+
+  useEffect(() => {
+    const storedScores = JSON.parse(localStorage.getItem("scores")) || [];
+    setScores(storedScores);
+  }, []);
 
   return (
-    <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ textAlign: "center", fontWeight: "bold" }}>🏆 Classement</DialogTitle>
-      <DialogContent>
-        {sortedScores.length === 0 ? (
-          <Typography textAlign="center">Aucun score enregistré.</Typography>
-        ) : (
-          sortedScores.map((entry, index) => (
-            <Typography key={index} sx={{ textAlign: "center", fontSize: "1.2rem" }}>
-              {index + 1}. {entry.name && entry.name.trim() !== "" ? entry.name : "Joueur inconnu"} -{" "}
-              {typeof entry.score === "number" ? `${entry.score} points` : "0 points"}
+    <Box sx={{ textAlign: "center", p: 4, background: "#E3F2FD", minHeight: "100vh" }}>
+      <Typography variant="h4" mb={3} fontWeight="bold">🏆 Classement des joueurs</Typography>
+
+      {scores.length === 0 ? (
+        <Typography>Aucun score enregistré.</Typography>
+      ) : (
+        scores.map((entry, index) => (
+          <Paper 
+            key={index} 
+            sx={{ p: 2, mb: 2, backgroundColor: "#BBDEFB", borderRadius: "10px", boxShadow: 2 }}
+          >
+            <Typography variant="h6">
+              {index + 1}. <strong>{entry.name}</strong> - <strong>{entry.points} pts</strong> 
+              ({categoriesMap[entry.themeId] || "Thème inconnu"}) - ⏳ <strong>{entry.timeUsed} sec</strong>
             </Typography>
-          ))
-        )}
-        <Box textAlign="center" mt={3}>
-          <Button variant="contained" color="primary" onClick={onClose}>
-            FERMER
-          </Button>
-        </Box>
-      </DialogContent>
-    </Dialog>
+          </Paper>
+        ))
+      )}
+
+      <Button 
+        variant="contained" 
+        onClick={onClose} 
+        sx={{ mt: 3, backgroundColor: "#D32F2F", "&:hover": { backgroundColor: "#B71C1C" } }}
+      >
+        ⬅️ Retour à l'accueil
+      </Button>
+    </Box>
   );
 };
 
