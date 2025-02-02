@@ -25,8 +25,13 @@ const ResultsPopup = ({ score, totalQuestions, onRestart, onViewDetails, onFinis
           🔄 Rejouer
         </Button>
 
-        {/* ❌ Fermer */}
-        <Button variant="outlined" color="error" onClick={onClose} sx={{ mt: 2, ml: 2 }}>
+        {/* ❌ Fermer - Corrigé */}
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => onClose()} // ✅ S'assurer qu'on exécute bien onClose()
+          sx={{ mt: 2, ml: 2 }}
+        >
           Fermer ❌
         </Button>
       </DialogContent>

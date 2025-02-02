@@ -49,6 +49,14 @@ const Quiz = ({ name, category, onFinish }) => {
     }
   };
 
+  // 🔄 Fonction pour revenir en arrière
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setUserAnswers(userAnswers.slice(0, -1)); // Retirer la dernière réponse donnée
+    }
+  };
+
   const handleRestart = () => {
     setCurrentQuestionIndex(0);
     setUserAnswers([]);
@@ -110,14 +118,26 @@ const Quiz = ({ name, category, onFinish }) => {
         Score : {score}
       </Typography>
 
+      {/* 🎯 Bouton Question Précédente */}
+      <Button 
+        variant="contained" 
+        color="warning" 
+        onClick={handlePreviousQuestion} 
+        sx={{ mt: 3, mr: 2 }} 
+        disabled={currentQuestionIndex === 0} // Désactiver si c'est la première question
+      >
+        ⬅️ Question précédente
+      </Button>
+
       {/* Popups des résultats */}
       {showResultsPopup && (
         <ResultsPopup
           score={score}
           totalQuestions={questions.length}
           onRestart={handleRestart}
-          onFinish={onFinish} // ✅ Correction ici
+          onFinish={onFinish}
           onViewDetails={() => setShowDetailedResults(true)}
+          onClose={() => setShowResultsPopup(false)} // ✅ Correction ici !
         />
       )}
 
