@@ -1,48 +1,19 @@
 import React from "react";
-import { Grid, Card, CardMedia, CardContent, Typography, Box } from "@mui/material";
-import themeImages from "../themeImages";
+import { Grid, Card, CardMedia, CardContent, Typography, CardActionArea } from "@mui/material";
+import categoryImages from "../themeImages";
 
 const Categories = ({ categories, onSelectCategory }) => {
   return (
-    <Grid container spacing={3} sx={{ mt: 4, justifyContent: "center" }}>
+    <Grid container spacing={3} justifyContent="center" sx={{ mt: 3 }}>
       {categories.map((category) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>
-          <Card
-            onClick={() => onSelectCategory(category.id)}
-            sx={{
-              cursor: "pointer",
-              borderRadius: "20px",
-              overflow: "hidden",
-              position: "relative",
-              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-              transition: "transform 0.3s, box-shadow 0.3s",
-              "&:hover": {
-                transform: "scale(1.05)",
-                boxShadow: "0 15px 40px rgba(0, 0, 0, 0.3)",
-              },
-            }}
-          >
-            <CardMedia
-              component="img"
-              height="160"
-              image={themeImages[category.name.split(":")[0]] || themeImages.Default}
-              alt={category.name}
-            />
-            <Box
-              sx={{
-                position: "absolute",
-                bottom: 0,
-                width: "100%",
-                backgroundColor: "rgba(0,0,0,0.6)",
-                color: "white",
-                textAlign: "center",
-                p: 1,
-              }}
-            >
-              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                {category.name}
-              </Typography>
-            </Box>
+        <Grid item key={category.id} xs={12} sm={6} md={4} lg={3}>
+          <Card sx={{ maxWidth: 250, borderRadius: "10px", boxShadow: 3 }}>
+            <CardActionArea onClick={() => onSelectCategory(category.id)}>
+              <CardMedia component="img" height="140" image={categoryImages[category.name] || "/assets/images/default.jpg"} alt={category.name} />
+              <CardContent sx={{ backgroundColor: "#64B5F6", color: "white", textAlign: "center" }}>
+                <Typography variant="h6">{category.name}</Typography>
+              </CardContent>
+            </CardActionArea>
           </Card>
         </Grid>
       ))}

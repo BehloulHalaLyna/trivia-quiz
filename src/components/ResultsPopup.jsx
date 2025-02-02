@@ -1,46 +1,15 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Modal } from "@mui/material";
 
-const ResultsPopup = ({ score, totalQuestions, onRestart, onViewDetails }) => {
+const ResultsPopup = ({ score, totalQuestions, onRestart }) => {
   return (
-    <Dialog
-      open={true}
-      onClose={onRestart}
-      maxWidth="sm"
-      fullWidth
-      sx={{
-        "& .MuiPaper-root": {
-          borderRadius: "15px",
-          padding: "20px",
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
-        },
-      }}
-    >
-      <DialogTitle>
-        <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-          Résultats 🎉
-        </Typography>
-      </DialogTitle>
-      <DialogContent>
-        <Typography variant="h6" mb={2} sx={{ textAlign: "center", fontWeight: "bold" }}>
-          Bravo ! Votre score : {score}/{totalQuestions}
-        </Typography>
-        <Typography mb={2} sx={{ textAlign: "center" }}>
-          Cliquez sur "Revoir les résultats" pour voir les détails.
-        </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={onRestart}
-          sx={{ marginRight: 2 }}
-        >
-          Rejouer
-        </Button>
-        <Button variant="outlined" color="secondary" onClick={onViewDetails}>
-          Revoir les résultats
-        </Button>
-      </DialogContent>
-    </Dialog>
+    <Modal open={true}>
+      <Box sx={{ p: 4, background: "white", borderRadius: "10px", textAlign: "center", width: "300px", margin: "auto" }}>
+        <Typography variant="h5">🎉 Résultats</Typography>
+        <Typography mt={2}>Score : {score} / {totalQuestions}</Typography>
+        <Button onClick={onRestart} sx={{ mt: 2, backgroundColor: "#007BFF", color: "white" }}>Revenir à l'accueil</Button>
+      </Box>
+    </Modal>
   );
 };
 
