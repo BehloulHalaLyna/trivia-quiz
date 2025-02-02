@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Typography, Button, Paper } from "@mui/material";
+import { useLeaderboard } from "../hooks/useLeaderboard"; 
 
 // ✅ Mapping des ID en noms de thèmes
 const categoriesMap = {
@@ -30,12 +31,10 @@ const categoriesMap = {
 };
 
 const Leaderboard = ({ onClose }) => {
-  const [scores, setScores] = useState([]);
+  const { scores, isLoading, error } = useLeaderboard(); // ✅ Utilisation de React Query
 
-  useEffect(() => {
-    const storedScores = JSON.parse(localStorage.getItem("scores")) || [];
-    setScores(storedScores);
-  }, []);
+  if (isLoading) return <Typography>Chargement du classement...</Typography>;
+  if (error) return <Typography>Erreur lors du chargement du classement.</Typography>;
 
   return (
     <Box sx={{ textAlign: "center", p: 4, background: "#E3F2FD", minHeight: "100vh" }}>

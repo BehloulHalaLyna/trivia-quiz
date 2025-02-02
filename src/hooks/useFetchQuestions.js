@@ -1,22 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 
-const fetchQuestions = async ({ queryKey }) => {
-  const [{ category, amount }] = queryKey.slice(1);
-  const { data } = await axios.get(
-    `https://opentdb.com/api.php?amount=${amount}&type=multiple&category=${category}`
-  );
+const fetchQuestions = async (category) => {
+  const url = `https://opentdb.com/api.php?amount=10&category=${category}&type=multiple`;
+  const response = await fetch(url);
+  
+  if (!response.ok) throw new Error("Erreur lors de la récupération des questions");
 
-  console.log("API Response:", data); // Debugging
+  const data = await response.json();
+  console.log("API Response :", data); // ✅ Vérifier la structure de la réponse
 
-  return data.results; // Ensure `results` exist
+  return data.results || []; // ✅ Retourner un tableau vide si `results` est `undefined`
 };
 
-export const useFetchQuestions = (category, amount = 10) => {
+export const useFetchQuestions = (category) => {
   return useQuery({
-    queryKey: ["questions", { category, amount }],
-    queryFn: fetchQuestions,
-    enabled: !!category,
-    staleTime: 1000 * 60 * 5, // ✅ Cache results for 5 minutes
+    queryKey: ["questions", category],
+    queryFn: () => fetchQuestions(category),
+    enabled: !!category, // ✅ Empêcher la requête si `category` est `null`
   });
 };
