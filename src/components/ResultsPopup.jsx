@@ -14,9 +14,12 @@ const ResultsPopup = ({ score, totalQuestions, userAnswers, onRestart, onViewDet
         <Typography variant="body1" color="textSecondary" sx={{ mt: 1, mb: 3 }}>
           {score >= totalQuestions / 2 ? "Bravo 🎉" : "Dommage, réessaie !"}
         </Typography>
+        {timeUsed !== 120 && ( // ✅ On n'affiche que si ce n'est pas 120 secondes
         <Typography variant="body2" sx={{ fontStyle: "italic", color: "gray" }}>
-          ⏳ Temps utilisé : <strong>{timeUsed} secondes</strong>
+           ⏳ Temps utilisé : {timeUsed} secondes
         </Typography>
+        )}
+
 
         {/* 🔍 Bouton Voir les Détails */}
         <Button variant="contained" color="primary" onClick={onViewDetails} sx={{ mt: 2 }}>
