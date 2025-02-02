@@ -29,7 +29,15 @@ const Quiz = ({ name, category, onFinish }) => {
   }, [timeLeft]);
 
   if (isLoading) return <Typography>Chargement des questions...</Typography>;
-  if (error) return <Typography>Erreur lors du chargement des questions.</Typography>;
+  if (error) return (
+    <Box textAlign="center" mt={5}>
+      <Typography color="error">❌ {error.message}</Typography>
+      <Button variant="contained" onClick={() => window.location.reload()}>
+        🔄 Réessayer
+      </Button>
+    </Box>
+  );
+  
   if (!questions || questions.length === 0) return <Typography>Aucune question trouvée.</Typography>;
 
   // ✅ Sécuriser l'accès aux questions
