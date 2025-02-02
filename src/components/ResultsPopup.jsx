@@ -8,34 +8,39 @@ const ResultsPopup = ({ score, totalQuestions, userAnswers, onRestart, onViewDet
         🏆 Résultats du Quiz
       </DialogTitle>
       <DialogContent sx={{ textAlign: "center", p: 3 }}>
-        <Typography variant="h5" fontWeight="bold">
-          Score : {score} / {totalQuestions}
-        </Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ mt: 1, mb: 3 }}>
-          {score >= totalQuestions / 2 ? "Bravo 🎉" : "Dommage, réessaie !"}
-        </Typography>
-        {timeUsed !== 120 && ( // ✅ On n'affiche que si ce n'est pas 120 secondes
-        <Typography variant="body2" sx={{ fontStyle: "italic", color: "gray" }}>
-           ⏳ Temps utilisé : {timeUsed} secondes
-        </Typography>
-        )}
+  <Typography variant="h5" fontWeight="bold">
+    Score : {score} / {totalQuestions}
+  </Typography>
+  <Typography variant="body1" color="textSecondary" sx={{ mt: 1, mb: 3 }}>
+    {score >= totalQuestions / 2 ? "Bravo 🎉" : "Dommage, réessaie !"}
+  </Typography>
 
+  {/* ✅ Condition pour cacher si le temps est 120s */}
+  {timeUsed !== 120 && (
+    <Typography variant="body2" sx={{ fontStyle: "italic", color: "gray" }}>
+      ⏳ Temps utilisé : {timeUsed} secondes
+    </Typography>
+  )}
 
-        {/* 🔍 Bouton Voir les Détails */}
-        <Button variant="contained" color="primary" onClick={onViewDetails} sx={{ mt: 2 }}>
-          Voir les réponses 📖
-        </Button>
+  {/* 📌 Container Flexbox pour bien centrer */}
+  <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}>
+    {/* 🔍 Voir les Détails */}
+    <Button variant="contained" color="primary" onClick={onViewDetails}>
+      Voir les réponses 📖
+    </Button>
 
-        {/* 🔄 Rejouer */}
-        <Button variant="contained" color="success" onClick={onRestart} sx={{ ml: 2 }}>
-          🔄 Rejouer
-        </Button>
+    {/* 🔄 Rejouer */}
+    <Button variant="contained" color="success" onClick={onRestart}>
+      🔄 Rejouer
+    </Button>
 
-        {/* ⬅️ Retour à l'accueil */}
-        <Button variant="outlined" color="error" onClick={onClose} sx={{ mt: 2, ml: 2 }}>
-          Fermer ❌
-        </Button>
-      </DialogContent>
+    {/* ❌ Fermer */}
+    <Button variant="outlined" color="error" onClick={onClose}>
+      Fermer ❌
+    </Button>
+  </Box>
+</DialogContent>
+
     </Dialog>
   );
 };
