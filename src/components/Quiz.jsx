@@ -64,12 +64,24 @@ const Quiz = ({ name, category, onFinish }) => {
   const currentQuestion = questions[currentQuestionIndex] ?? { incorrect_answers: [], correct_answer: "", question: "" };
 
   const handleAnswer = (answer) => {
-    setUserAnswers([...userAnswers, answer]);
-    if (answer === currentQuestion.correct_answer) setScore((prevScore) => prevScore + 1);
+    const updatedAnswers = [...userAnswers];
+    updatedAnswers[currentQuestionIndex] = answer;
+    setUserAnswers(updatedAnswers);
+
+    if (answer === currentQuestion.correct_answer) {
+      setScore((prevScore) => prevScore + 1);
+    }
+
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
       handleFinishQuiz();
+    }
+  };
+
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
     }
   };
 
@@ -143,7 +155,26 @@ const Quiz = ({ name, category, onFinish }) => {
         ))}
       </Grid>
 
-      {/* ✅ Popup des résultats */}
+      {/* 🔙 Boutons supplémentaires */}
+      <Button 
+        variant="contained" 
+        onClick={handlePreviousQuestion} 
+        sx={{ mt: 3, mr: 2 }} 
+        disabled={currentQuestionIndex === 0}
+      >
+        ⬅️ Question précédente
+      </Button>
+
+      <Button 
+        variant="contained" 
+        color="error"
+        onClick={handleFinishQuiz} 
+        sx={{ mt: 3 }}
+      >
+        🛑 Mettre fin à la partie
+      </Button>
+
+      {/* ✅ Popups des résultats */}
       {showResultsPopup && (
         <ResultsPopup
           score={score}
