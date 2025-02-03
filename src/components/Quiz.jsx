@@ -5,6 +5,7 @@ import ResultsPopup from "./ResultsPopup";
 import DetailedResultsPopup from "./DetailedResultsPopup";
 import { Box, Typography, Grid, Paper, LinearProgress, Button } from "@mui/material";
 import { useLeaderboard } from "../hooks/useLeaderboard";  
+import { motion } from "framer-motion";
 
 const Quiz = ({ name, category, onFinish }) => {
   const { data: fetchedQuestions, isLoading, error } = useFetchQuestions(category);
@@ -114,7 +115,13 @@ const Quiz = ({ name, category, onFinish }) => {
       />
 
       {/* 📌 Question */}
-      <Typography variant="h5" fontWeight="bold" mt={3} mb={2}>
+      <Typography 
+        component={motion.div}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        variant="h5" fontWeight="bold" mt={3} mb={2}
+      >
         Question {currentQuestionIndex + 1}/{questions.length}
       </Typography>
       <Typography variant="body1" mb={3} p={2} sx={{ background: "#ffffff", borderRadius: "10px", boxShadow: 2, fontSize: "1.2rem" }} 
@@ -127,6 +134,9 @@ const Quiz = ({ name, category, onFinish }) => {
           <Grid item xs={12} sm={6} key={index}>
             <Paper
               onClick={() => handleAnswer(answer)}
+              component={motion.div}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               sx={{
                 p: 2,
                 cursor: "pointer",
@@ -136,7 +146,7 @@ const Quiz = ({ name, category, onFinish }) => {
                 borderRadius: "10px",
                 backgroundColor: "#fff",
                 transition: "0.3s",
-                "&:hover": { backgroundColor: "#1976D2", color: "white", transform: "scale(1.05)" },
+                "&:hover": { backgroundColor: "#1976D2", color: "white" },
                 boxShadow: 2,
               }}
             >
@@ -152,7 +162,7 @@ const Quiz = ({ name, category, onFinish }) => {
           score={score}
           totalQuestions={questions.length}
           userAnswers={userAnswers}
-          questions={questions} // ✅ Passer les questions pour éviter un bug
+          questions={questions}
           timeUsed={120 - timeLeft}  
           onRestart={() => window.location.reload()} 
           onFinish={onFinish}

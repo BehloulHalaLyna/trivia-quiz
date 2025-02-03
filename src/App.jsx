@@ -1,49 +1,94 @@
-import React, { useState } from "react";
+import React, { useState } from "react"; 
 import { useFetchCategories } from "./hooks/useFetchCategories";
 import Categories from "./components/Categories";
 import Quiz from "./components/Quiz";
 import Leaderboard from "./components/Leaderboard";
+import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
+import IconButton from "@mui/material/IconButton";
+import { Box, Typography, Button, TextField } from "@mui/material";
 
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [playerName, setPlayerName] = useState("");
   const [showQuiz, setShowQuiz] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  
+  const [darkMode, setDarkMode] = useState(false); // ✅ Ajout du mode sombre
+
   const { data: categories, isLoading, error } = useFetchCategories();
 
-  // ✅ Correction : Ajouter la fonction handleCategorySelect
+  const theme = createTheme({
+    palette: {
+      mode: darkMode ? "dark" : "light",
+    },
+  });
+
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
     setShowQuiz(true);
   };
 
   return (
-    <div>
-      {!showQuiz && !showLeaderboard && (
-        <>
-          <h1>Bienvenue au Trivia Quiz !</h1>
-          <input 
-            type="text" 
-            placeholder="Entrez votre surnom" 
-            value={playerName} 
-            onChange={(e) => setPlayerName(e.target.value)}
-          />
-
-          <h2>Choisissez un thème :</h2>
-          {isLoading && <p>Chargement...</p>}
-          {error && <p style={{ color: "red" }}>❌ Erreur : Les catégories ne sont pas disponibles.</p>}
-
-          {categories && <Categories categories={categories} onSelectCategory={handleCategorySelect} />}
-          
-          <button onClick={() => setShowLeaderboard(true)}>📖 VOIR CLASSEMENT</button>
-        </>
-      )}
-
-      {showQuiz && <Quiz name={playerName} category={selectedCategory} onFinish={() => setShowQuiz(false)} />}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       
-      {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
-    </div>
+      <Box sx={{ textAlign: "center", p: 4, maxWidth: "600px", margin: "auto" }}>
+        
+        {/* 🔆 Toggle Dark Mode */}
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
+            {darkMode ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Box>
+
+        {!showQuiz && !showLeaderboard && (
+          <>
+            <Typography variant="h3" fontWeight="bold" mb={2}>🎉 Bienvenue au Trivia Quiz !</Typography>
+
+            {/* 🔹 Champ de pseudo amélioré */}
+            <TextField 
+              label="Entrez votre surnom"
+              variant="outlined"
+              fullWidth
+              value={playerName}
+              onChange={(e) => setPlayerName(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+
+            <Typography variant="h5" fontWeight="bold" mb={2}>📌 Choisissez un thème :</Typography>
+
+            {isLoading && <Typography>⏳ Chargement...</Typography>}
+            {error && <Typography color="error">❌ Erreur : Les catégories ne sont pas disponibles.</Typography>}
+
+            {/* ✅ Liste des catégories */}
+            {categories && <Categories categories={categories} onSelectCategory={handleCategorySelect} />}
+
+            {/* ✅ Bouton voir classement amélioré */}
+            <Button 
+              variant="contained" 
+              color="secondary"
+              sx={{
+                mt: 3, 
+                fontSize: "1rem", 
+                padding: "10px 20px",
+                transition: "all 0.3s ease-in-out",
+                "&:hover": { transform: "scale(1.05)" }
+              }}
+              onClick={() => setShowLeaderboard(true)}
+            >
+              📖 Voir Classement
+            </Button>
+          </>
+        )}
+
+        {/* ✅ Affichage du Quiz */}
+        {showQuiz && <Quiz name={playerName} category={selectedCategory} onFinish={() => setShowQuiz(false)} />}
+
+        {/* ✅ Affichage du Classement */}
+        {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
+        
+      </Box>
+    </ThemeProvider>
   );
 };
 
