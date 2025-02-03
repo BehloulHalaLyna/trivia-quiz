@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Button, Paper } from "@mui/material";
-import { useLeaderboard } from "../hooks/useLeaderboard"; 
+import { useLeaderboard } from "../hooks/useLeaderboard";
 
 // ✅ Mapping des ID en noms de thèmes
 const categoriesMap = {
@@ -33,28 +33,26 @@ const categoriesMap = {
 const Leaderboard = ({ onClose }) => {
   const { scores, isLoading, error } = useLeaderboard(); // ✅ Utilisation de React Query
 
+  // ✅ Vérification de sécurité pour éviter l'erreur `scores is undefined`
   if (isLoading) return <Typography>Chargement du classement...</Typography>;
-  if (error) return <Typography>Erreur lors du chargement du classement.</Typography>;
+  if (error) return <Typography color="error">❌ Erreur lors du chargement du classement.</Typography>;
+  if (!scores || scores.length === 0) return <Typography>Aucun score enregistré.</Typography>;
 
   return (
     <Box sx={{ textAlign: "center", p: 4, background: "#E3F2FD", minHeight: "100vh" }}>
       <Typography variant="h4" mb={3} fontWeight="bold">🏆 Classement des joueurs</Typography>
 
-      {scores.length === 0 ? (
-        <Typography>Aucun score enregistré.</Typography>
-      ) : (
-        scores.map((entry, index) => (
-          <Paper 
-            key={index} 
-            sx={{ p: 2, mb: 2, backgroundColor: "#BBDEFB", borderRadius: "10px", boxShadow: 2 }}
-          >
-            <Typography variant="h6">
-              {index + 1}. <strong>{entry.name}</strong> - <strong>{entry.points} pts</strong> 
-              ({categoriesMap[entry.themeId] || "Thème inconnu"}) - ⏳ <strong>{entry.timeUsed} sec</strong>
-            </Typography>
-          </Paper>
-        ))
-      )}
+      {scores.map((entry, index) => (
+        <Paper 
+          key={index} 
+          sx={{ p: 2, mb: 2, backgroundColor: "#BBDEFB", borderRadius: "10px", boxShadow: 2 }}
+        >
+          <Typography variant="h6">
+            {index + 1}. <strong>{entry.name}</strong> - <strong>{entry.points} pts</strong> 
+            ({categoriesMap[entry.themeId] || "Thème inconnu"}) - ⏳ <strong>{entry.timeUsed} sec</strong>
+          </Typography>
+        </Paper>
+      ))}
 
       <Button 
         variant="contained" 
