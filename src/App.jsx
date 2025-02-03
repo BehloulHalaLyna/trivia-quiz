@@ -4,8 +4,6 @@ import Categories from "./components/Categories";
 import Quiz from "./components/Quiz";
 import Leaderboard from "./components/Leaderboard";
 import { CssBaseline, ThemeProvider, createTheme } from "@mui/material";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
-import IconButton from "@mui/material/IconButton";
 import { Box, Typography, Button, TextField } from "@mui/material";
 
 const App = () => {
@@ -13,7 +11,7 @@ const App = () => {
   const [playerName, setPlayerName] = useState("");
   const [showQuiz, setShowQuiz] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); 
+  const [darkMode, setDarkMode] = useState(false);
 
   const { data: categories, isLoading, error } = useFetchCategories();
 
@@ -21,7 +19,7 @@ const App = () => {
     palette: {
       mode: darkMode ? "dark" : "light",
       background: {
-        default: darkMode ? "#1E2A38" : "#CDE7FF", // Changement du bleu en dark mode
+        default: darkMode ? "#1E2A38" : "#CDE7FF",
       },
     },
   });
@@ -29,6 +27,14 @@ const App = () => {
   const handleCategorySelect = (categoryId) => {
     setSelectedCategory(categoryId);
     setShowQuiz(true);
+  };
+
+  const handleGoBack = () => {
+    if (showQuiz) {
+      setShowQuiz(false);
+    } else if (showLeaderboard) {
+      setShowLeaderboard(false);
+    }
   };
 
   return (
@@ -41,10 +47,9 @@ const App = () => {
           p: 4, 
           width: "100vw", 
           minHeight: "100vh",
-          backgroundColor: theme.palette.background.default, // ✅ Appliquer le fond selon le mode
+          backgroundColor: theme.palette.background.default,
         }}
       >
-        {/* 🔆 Toggle Dark Mode */}
         <Box sx={{ display: "flex", justifyContent: "space-between", px: 4 }}>
           <Button 
             variant="contained" 
@@ -65,13 +70,24 @@ const App = () => {
           </Button>
         </Box>
 
+        {/* ✅ Bouton Retour - S'affiche si on est dans le Quiz ou le Classement */}
+        {(showQuiz || showLeaderboard) && (
+          <Button 
+            variant="contained" 
+            color="warning"
+            sx={{ mt: 3, fontSize: "1rem", padding: "10px 20px" }}
+            onClick={handleGoBack}
+          >
+            🔙 Retour
+          </Button>
+        )}
+
         {!showQuiz && !showLeaderboard && (
           <>
             <Typography variant="h3" fontWeight="bold" mt={3}>
               🎉 Bienvenue au Trivia Quiz !
             </Typography>
 
-            {/* 🔹 Champ de pseudo amélioré */}
             <TextField 
               label="👍 Entrez votre surnom"
               variant="outlined"
@@ -84,15 +100,11 @@ const App = () => {
             {isLoading && <Typography>⏳ Chargement...</Typography>}
             {error && <Typography color="error">❌ Erreur : Les catégories ne sont pas disponibles.</Typography>}
 
-            {/* ✅ Liste des catégories */}
             {categories && <Categories categories={categories} onSelectCategory={handleCategorySelect} />}
           </>
         )}
 
-        {/* ✅ Affichage du Quiz */}
         {showQuiz && <Quiz name={playerName} category={selectedCategory} onFinish={() => setShowQuiz(false)} />}
-
-        {/* ✅ Affichage du Classement */}
         {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
       </Box>
     </ThemeProvider>
