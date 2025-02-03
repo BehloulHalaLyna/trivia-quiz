@@ -7,17 +7,31 @@ import { Box, Typography, Grid, Paper, LinearProgress, Button } from "@mui/mater
 import { useLeaderboard } from "../hooks/useLeaderboard";  
 
 const Quiz = ({ name, category, onFinish }) => {
+  const { data: fetchedQuestions, isLoading, error } = useFetchQuestions(category);
+  const { addScore } = useLeaderboard(); 
+
+  const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [score, setScore] = useState(0);
   const [showResultsPopup, setShowResultsPopup] = useState(false);
   const [showDetailedResults, setShowDetailedResults] = useState(false);
-  const { data: questions, isLoading, error } = useFetchQuestions(category);
-  console.log("Données reçues :", questions);
-  const { addScore } = useLeaderboard(); 
-
+  const [shuffledAnswers, setShuffledAnswers] = useState([]); 
   const [quizFinished, setQuizFinished] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120);
+
+  // ✅ Charger les questions UNE SEULE FOIS
+  useEffect(() => {
+    if (fetchedQuestions && fetchedQuestions.length > 0 && questions.length === 0) {
+      setQuestions(fetchedQuestions);
+      setCurrentQuestionIndex(0);
+      setUserAnswers([]);
+      setScore(0);
+      setShowResultsPopup(false);
+      setShowDetailedResults(false);
+      setQuizFinished(false);
+    }
+  }, [fetchedQuestions]);
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -28,6 +42,13 @@ const Quiz = ({ name, category, onFinish }) => {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
+  useEffect(() => {
+    if (questions.length > 0 && questions[currentQuestionIndex]) {
+      const newAnswers = [...questions[currentQuestionIndex].incorrect_answers, questions[currentQuestionIndex].correct_answer];
+      setShuffledAnswers(newAnswers.sort(() => Math.random() - 0.5));
+    }
+  }, [currentQuestionIndex, questions]);
+
   if (isLoading) return <Typography>Chargement des questions...</Typography>;
   if (error) return (
     <Box textAlign="center" mt={5}>
@@ -37,19 +58,17 @@ const Quiz = ({ name, category, onFinish }) => {
       </Button>
     </Box>
   );
-  
+
   if (!questions || questions.length === 0) return <Typography>Aucune question trouvée.</Typography>;
 
-  // ✅ Sécuriser l'accès aux questions
-  const currentQuestion = questions[currentQuestionIndex] || { incorrect_answers: [], correct_answer: "", question: "" };
-  const answers = [...currentQuestion.incorrect_answers, currentQuestion.correct_answer].sort();
+  const currentQuestion = questions[currentQuestionIndex] ?? { incorrect_answers: [], correct_answer: "", question: "" };
 
   // ✅ Répondre à une question
   const handleAnswer = (answer) => {
     setUserAnswers([...userAnswers, answer]);
-    if (answer === currentQuestion.correct_answer) setScore(score + 1);
+    if (answer === currentQuestion.correct_answer) setScore((prevScore) => prevScore + 1);
     if (currentQuestionIndex + 1 < questions.length) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex((prevIndex) => prevIndex + 1);
     } else {
       handleFinishQuiz();
     }
@@ -58,12 +77,12 @@ const Quiz = ({ name, category, onFinish }) => {
   // 🔄 Revenir à la question précédente
   const handlePreviousQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex((prevIndex) => prevIndex - 1);
       setUserAnswers(userAnswers.slice(0, -1));
     }
   };
 
-  // 🏆 Enregistrer le score (React Query)
+  // 🏆 Enregistrer le score et afficher le popup des résultats
   const handleFinishQuiz = () => {
     if (quizFinished) return;  
     setQuizFinished(true);
@@ -78,18 +97,7 @@ const Quiz = ({ name, category, onFinish }) => {
 
     addScore(newScore); 
     setShowResultsPopup(true);
-    setTimeLeft(0);  
-  };
-
-  // 🔄 Rejouer
-  const handleRestart = () => {
-    setCurrentQuestionIndex(0);
-    setUserAnswers([]);
-    setScore(0);
-    setTimeLeft(120);
-    setShowResultsPopup(false);
-    setShowDetailedResults(false);
-    setQuizFinished(false);
+    setTimeLeft(0);
   };
 
   return (
@@ -115,7 +123,7 @@ const Quiz = ({ name, category, onFinish }) => {
 
       {/* 🔥 Réponses */}
       <Grid container spacing={2} justifyContent="center">
-        {answers.map((answer, index) => (
+        {shuffledAnswers.map((answer, index) => (
           <Grid item xs={12} sm={6} key={index}>
             <Paper
               onClick={() => handleAnswer(answer)}
@@ -138,27 +146,15 @@ const Quiz = ({ name, category, onFinish }) => {
         ))}
       </Grid>
 
-      <Typography mt={4} fontSize="1.2rem" fontWeight="bold">
-        Score : {score}
-      </Typography>
-
-      <Button 
-        variant="contained" 
-        color="warning" 
-        onClick={handlePreviousQuestion} 
-        sx={{ mt: 3, mr: 2 }} 
-        disabled={currentQuestionIndex === 0}
-      >
-        ⬅️ Question précédente
-      </Button>
-
+      {/* ✅ Popup des résultats */}
       {showResultsPopup && (
         <ResultsPopup
           score={score}
           totalQuestions={questions.length}
           userAnswers={userAnswers}
+          questions={questions} // ✅ Passer les questions pour éviter un bug
           timeUsed={120 - timeLeft}  
-          onRestart={handleRestart}
+          onRestart={() => window.location.reload()} 
           onFinish={onFinish}
           onViewDetails={() => setShowDetailedResults(true)}
           onClose={() => setShowResultsPopup(false)}

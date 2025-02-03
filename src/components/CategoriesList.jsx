@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Box, Typography, Grid, Paper, TextField } from "@mui/material";
 
 const CategoriesList = ({ categories, onSelectCategory }) => {
   const [searchTerm, setSearchTerm] = useState(""); // 🔍 État du filtre
 
-  // 🔍 Filtrer les catégories
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // ✅ Utilisation de useMemo pour éviter un recalcul inutile
+  const filteredCategories = useMemo(() => {
+    return categories.filter((category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm, categories]); // 📌 Ne se recalcule que si searchTerm ou categories changent
 
   return (
     <Box sx={{ textAlign: "center", mt: 5 }}>
-      
       <Typography variant="h4" fontWeight="bold" mb={3}>
         📌 Choisissez un thème
       </Typography>
