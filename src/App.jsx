@@ -13,13 +13,16 @@ const App = () => {
   const [playerName, setPlayerName] = useState("");
   const [showQuiz, setShowQuiz] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); // ✅ Ajout du mode sombre
+  const [darkMode, setDarkMode] = useState(false); 
 
   const { data: categories, isLoading, error } = useFetchCategories();
 
   const theme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
+      background: {
+        default: darkMode ? "#1E2A38" : "#CDE7FF", // Changement du bleu en dark mode
+      },
     },
   });
 
@@ -32,52 +35,57 @@ const App = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       
-      <Box sx={{ textAlign: "center", p: 4, maxWidth: "600px", margin: "auto" }}>
-        
+      <Box 
+        sx={{ 
+          textAlign: "center", 
+          p: 4, 
+          width: "100vw", 
+          minHeight: "100vh",
+          backgroundColor: theme.palette.background.default, // ✅ Appliquer le fond selon le mode
+        }}
+      >
         {/* 🔆 Toggle Dark Mode */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
-            {darkMode ? <Brightness7 /> : <Brightness4 />}
-          </IconButton>
+        <Box sx={{ display: "flex", justifyContent: "space-between", px: 4 }}>
+          <Button 
+            variant="contained" 
+            color="primary"
+            sx={{ borderRadius: "50px", fontSize: "1rem", padding: "10px 20px" }}
+            onClick={() => setDarkMode(!darkMode)}
+          >
+            {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+          </Button>
+
+          <Button 
+            variant="contained" 
+            color="success"
+            sx={{ fontSize: "1rem", padding: "10px 20px" }}
+            onClick={() => setShowLeaderboard(true)}
+          >
+            📖 Voir Classement
+          </Button>
         </Box>
 
         {!showQuiz && !showLeaderboard && (
           <>
-            <Typography variant="h3" fontWeight="bold" mb={2}>🎉 Bienvenue au Trivia Quiz !</Typography>
+            <Typography variant="h3" fontWeight="bold" mt={3}>
+              🎉 Bienvenue au Trivia Quiz !
+            </Typography>
 
             {/* 🔹 Champ de pseudo amélioré */}
             <TextField 
-              label="Entrez votre surnom"
+              label="👍 Entrez votre surnom"
               variant="outlined"
               fullWidth
               value={playerName}
               onChange={(e) => setPlayerName(e.target.value)}
-              sx={{ mb: 3 }}
+              sx={{ mt: 3, mb: 3, backgroundColor: "#FFF", borderRadius: "10px" }}
             />
-
-            <Typography variant="h5" fontWeight="bold" mb={2}>📌 Choisissez un thème :</Typography>
 
             {isLoading && <Typography>⏳ Chargement...</Typography>}
             {error && <Typography color="error">❌ Erreur : Les catégories ne sont pas disponibles.</Typography>}
 
             {/* ✅ Liste des catégories */}
             {categories && <Categories categories={categories} onSelectCategory={handleCategorySelect} />}
-
-            {/* ✅ Bouton voir classement amélioré */}
-            <Button 
-              variant="contained" 
-              color="secondary"
-              sx={{
-                mt: 3, 
-                fontSize: "1rem", 
-                padding: "10px 20px",
-                transition: "all 0.3s ease-in-out",
-                "&:hover": { transform: "scale(1.05)" }
-              }}
-              onClick={() => setShowLeaderboard(true)}
-            >
-              📖 Voir Classement
-            </Button>
           </>
         )}
 
@@ -86,7 +94,6 @@ const App = () => {
 
         {/* ✅ Affichage du Classement */}
         {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
-        
       </Box>
     </ThemeProvider>
   );
