@@ -1,22 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-// 🔹 Fonction pour récupérer et trier le classement
+// 🔹 Fonction pour récupérer le classement depuis localStorage
 const getLeaderboard = () => {
   const scores = JSON.parse(localStorage.getItem("scores")) || [];
-
-  // 🔄 Trier par score décroissant, puis par temps croissant en cas d'égalité
-  return scores.sort((a, b) => {
-    if (b.points === a.points) {
-      return a.timeUsed - b.timeUsed; // Plus rapide en premier
-    }
-    return b.points - a.points; // Plus grand score en premier
-  });
+  
+  // ✅ Trier par score DESC et temps ASC (en cas d'égalité)
+  return scores.sort((a, b) => b.points - a.points || a.timeUsed - b.timeUsed);
 };
 
-// 🔹 Fonction pour ajouter un score au classement
+// 🔹 Fonction pour ajouter un score au classement (en gardant max 10 scores)
 const addScoreToLeaderboard = (newScore) => {
-  const scores = getLeaderboard();
+  let scores = getLeaderboard();
+  
+  // ✅ Ajouter le nouveau score
   scores.push(newScore);
+  
+  // ✅ Trier et ne garder que les 10 meilleurs
+  scores = scores
+    .sort((a, b) => b.points - a.points || a.timeUsed - b.timeUsed)
+    .slice(0, 10); // 🔥 Coupe à 10 scores max
+
+  // ✅ Mise à jour du stockage local
   localStorage.setItem("scores", JSON.stringify(scores));
   return scores;
 };
@@ -25,7 +29,7 @@ const addScoreToLeaderboard = (newScore) => {
 export const useLeaderboard = () => {
   const queryClient = useQueryClient();
 
-  // 🔄 Récupérer les scores triés
+  // 🔄 Récupérer les scores
   const { data: scores } = useQuery({
     queryKey: ["leaderboard"],
     queryFn: getLeaderboard,

@@ -50,7 +50,8 @@ const App = () => {
           backgroundColor: theme.palette.background.default,
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", px: 4 }}>
+        {/* ✅ Barre de navigation avec espace ajouté */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", px: 4, mb: 3 }}>
           <Button 
             variant="contained" 
             color="primary"
@@ -70,8 +71,8 @@ const App = () => {
           </Button>
         </Box>
 
-        {/* ✅ Bouton Retour - S'affiche si on est dans le Quiz ou le Classement */}
-        {(showQuiz || showLeaderboard) && (
+        {/* ✅ Bouton Retour - UNIQUEMENT si on est dans le Quiz */}
+        {showQuiz && (
           <Button 
             variant="contained" 
             color="warning"
@@ -82,6 +83,7 @@ const App = () => {
           </Button>
         )}
 
+        {/* ✅ Page d'accueil */}
         {!showQuiz && !showLeaderboard && (
           <>
             <Typography variant="h3" fontWeight="bold" mt={3}>
@@ -104,7 +106,10 @@ const App = () => {
           </>
         )}
 
+        {/* ✅ Affichage du Quiz */}
         {showQuiz && <Quiz name={playerName} category={selectedCategory} onFinish={() => setShowQuiz(false)} />}
+
+        {/* ✅ Affichage du Classement */}
         {showLeaderboard && <Leaderboard onClose={() => setShowLeaderboard(false)} />}
       </Box>
     </ThemeProvider>

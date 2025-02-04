@@ -27,8 +27,11 @@ const Leaderboard = ({ onClose }) => {
         <Paper 
           key={index} 
           sx={{ 
-            p: 2, mb: 2, backgroundColor: index === 0 ? "#FFD700" : "#BBDEFB", 
-            borderRadius: "10px", boxShadow: 2, fontWeight: index === 0 ? "bold" : "normal" 
+            p: 2, mb: 2, 
+            backgroundColor: index === 0 ? "#FFD700" : index === 1 ? "#C0C0C0" : index === 2 ? "#CD7F32" : "#BBDEFB", 
+            borderRadius: "10px", 
+            boxShadow: 2, 
+            fontWeight: index === 0 ? "bold" : "normal" 
           }}
         >
           <Typography variant="h6">
@@ -38,11 +41,18 @@ const Leaderboard = ({ onClose }) => {
         </Paper>
       ))}
 
+      {/* ✅ Garder UNIQUEMENT ce bouton de retour */}
       <Button 
         variant="contained" 
         onClick={onClose} 
-        sx={{ mt: 3, backgroundColor: "#D32F2F", "&:hover": { backgroundColor: "#B71C1C" } }}
-      >
+        sx={{ 
+           mt: 3, // ✅ Ajoute un bon espacement après la liste
+           display: "block", // ✅ Pour l'afficher en ligne entière
+            margin: "auto", // ✅ Centre le bouton sous la liste
+            backgroundColor: "#D32F2F", 
+            "&:hover": { backgroundColor: "#B71C1C" } 
+         }}
+        >
         ⬅️ Retour à l'accueil
       </Button>
     </Box>
