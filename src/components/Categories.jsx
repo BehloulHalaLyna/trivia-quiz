@@ -6,39 +6,41 @@ const Categories = ({ categories, onSelectCategory }) => {
   return (
     <Box sx={{ textAlign: "center", p: 4 }}>
       <Typography variant="h4" fontWeight="bold" mb={3}>
-        🎉 Bienvenue dans TRIVIA QUIZ 🎉
+        📌 Choisissez un thème !
       </Typography>
 
-      <Grid container spacing={3} justifyContent="center">
+      <Grid container spacing={1} justifyContent="center"> {/* 🔥 Réduit l’espace entre les cartes */}
         {categories.map((category) => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={category.id}>
             <Paper
               onClick={() => onSelectCategory(category.id)}
               sx={{
-                p: 2,
                 cursor: "pointer",
                 textAlign: "center",
-                borderRadius: "10px",
+                borderRadius: "15px",
                 transition: "0.3s",
                 "&:hover": { backgroundColor: "#1976D2", color: "white", transform: "scale(1.05)" },
                 boxShadow: 3,
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
+                justifyContent: "space-between",
+                width: "250px", // 🔥 Augmente la largeur des cartes
+                height: "300px", // 🔥 Légèrement plus grandes pour un meilleur rendu
+                padding: "15px",
               }}
             >
               <img
                 src={categoryImages[category.name] || "/assets/images/default.jpg"}
                 alt={category.name}
-                width="150"
-                height="150"
                 style={{
+                  width: "100%", 
+                  height: "75%", // 🔥 L’image occupe plus d’espace
+                  objectFit: "cover",
                   borderRadius: "10px",
-                  boxShadow: "2px 2px 5px rgba(0,0,0,0.2)",
-                  marginBottom: "10px",
                 }}
               />
-              <Typography variant="h6" fontWeight="bold">
+              <Typography variant="h6" fontWeight="bold" sx={{ mt: 1 }}>
                 {category.name}
               </Typography>
             </Paper>
